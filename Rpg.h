@@ -7,17 +7,8 @@
 
 std::vector<int> concat_symbol_chars(const std::vector<int>& v1, const std::vector<int>& v2, const std::vector<int>& v3);
 
-#define PRINT(x) std::cout << x << std::endl
-
-template <typename T>
-void print(T s)
-{
-    PRINT(s);
-}
-
 class PassGenerator
 {
-
     using CharPool = std::vector<int>;
 public:
     PassGenerator(size_t length, bool ul, bool ll, bool num, bool sym);
@@ -28,13 +19,11 @@ public:
     void UseLower(bool b);
     void UseNumbers(bool b);
     void UseSymbols(bool b);
-    int RandomPoolElement();
-    void PrintCharPool() const;
-    void SetLength(int new_length) { pass_length = new_length; }
-	const int Length() { return pass_length; }
     void ExcludeSimilarChars(bool b);
     void ExcludeAmbiguousSymbols(bool b);
-
+    int RandomPoolElement();
+    void SetLength(int new_length) { pass_length = new_length; }
+	const int Length() { return pass_length; }
 private:
     std::vector<int> CharRange(int lower, int upper);
     size_t pass_length;

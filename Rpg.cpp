@@ -127,16 +127,6 @@ void PassGenerator::ExcludeAmbiguousSymbols(bool b)
     GeneratePool();
 }
 
-void PassGenerator::PrintCharPool() const
-{
-    int i = 0;
-    for (const auto& num : pool)
-    {
-        std::cout << i << " " <<  num << " " << char(num) << std::endl;
-        ++i;
-    }
-}
-
 int PassGenerator::RandomPoolElement()
 {
     std::random_device device{"/dev/urandom"};
