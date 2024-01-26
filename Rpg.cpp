@@ -2,135 +2,129 @@
 
 #include <algorithm>
 
-const std::vector<char> EXCLUDED_CHARS{'0', 'O', 'o', 'L', 'l', 'i', '1'};
-const std::vector<char> EXCLUDED_SYMBOLS{'{', '}', '[', ']', '(', ')', '/', '\\', '\'', '\"', '`', '~', ',', ';', ':', '.', '<', '>'};
-
-bool contains(const std::vector<char>& a, char key)
+bool contains(const std::vector<char>& vec, char key)
 {
-    if (std::find(std::begin(a), std::end(a), key) != std::end(a))
-    {
-        return true;
-    }
-    return false;
+    return (std::find(std::begin(vec), std::end(vec), key) != std::end(vec));
 }
 
 void RemoveFromPool(std::vector<int>& pool, const std::vector<char>& targets)
 {
-    pool.erase(std::remove_if(pool.begin(), pool.end(), [&targets](int i) { return contains(targets, i);}), pool.end());
+    pool.erase(std::remove_if(pool.begin(), pool.end(), [&targets](int elem) { return contains(targets, elem);}), pool.end());
 }
 
-std::vector<int> PassGenerator::CharRange(int lower, int upper)
+std::vector<int> Rpg::charRange(RpgRange range)
 {
     std::vector<int> retval;
-    for (int l = lower; l <= upper; ++l)
+    for (int character = range.min; character <= range.max; ++character)
     {
-        retval.push_back(l);
+        retval.push_back(character);
     }
     return retval;
 }
 
-std::vector<int> concat_symbol_chars(const std::vector<int>& v1, const std::vector<int>& v2, const std::vector<int>& v3)
+std::vector<int> concat_symbol_chars(const std::vector<int>& vec1, const std::vector<int>& vec2, const std::vector<int>& vec3)
 {
     std::vector<int> retval;
-    retval.reserve(v1.size() + v2.size() + v3.size());
-    retval.insert(retval.end(), v1.begin(), v1.end());
-    retval.insert(retval.end(), v2.begin(), v2.end());
-    retval.insert(retval.end(), v3.begin(), v3.end());
+    retval.reserve(vec1.size() + vec2.size() + vec3.size());
+    retval.insert(retval.end(), vec1.begin(), vec1.end());
+    retval.insert(retval.end(), vec2.begin(), vec2.end());
+    retval.insert(retval.end(), vec3.begin(), vec3.end());
     return retval;
 }
 
-PassGenerator::PassGenerator(size_t length, bool ul, bool ll, bool num, bool sym) : pass_length(length), use_upper(ul), use_lower(ll), use_numbers(num), use_symbols(sym)
+Rpg::Rpg(size_t length, bool upper, bool lower, bool num, bool sym) : 
+    m_PassLength(length), m_UseUpper(upper), m_UseLower(lower), m_UseNumbers(num), m_UseSymbols(sym)
 {
-    pool.reserve(uppercase_letters.size() + lowercase_letters.size() + numbers.size() + symbols.size());
-    GeneratePool();
+    m_CharacterPool.reserve(m_UppercaseLetters.size() + m_LowercaseLetters.size() + m_Numbers.size() + m_Symbols.size());
+    generatePool();
 }
 
-std::string PassGenerator::Generate()
+std::string Rpg::generate()
 {
-    std::string pw = "";
-    for (size_t i = 0; i != pass_length; ++i)
+    std::string password;
+    for (size_t i = 0; i != m_PassLength; ++i)
     {
-        if (pool.size())
+        if (!m_CharacterPool.empty())
         {
-            pw.append(1, pool[RandomPoolElement()]);
+            password.append(1, m_CharacterPool[randomPoolElement()]);
         }
     }
-    return pw;
+    return password;
 }
 
-void PassGenerator::GeneratePool()
+void Rpg::generatePool()
 {
-    pool.clear();
-    if (use_lower)
+    m_CharacterPool.clear();
+    if (m_UseLower)
     {
-        pool.insert(pool.end(), lowercase_letters.begin(), lowercase_letters.end());
+        m_CharacterPool.insert(m_CharacterPool.end(), m_LowercaseLetters.begin(), m_LowercaseLetters.end());
     }
-    if (use_upper)
+    if (m_UseUpper)
     {
-        pool.insert(pool.end(), uppercase_letters.begin(), uppercase_letters.end());
-    }
-
-    if (use_numbers)
-    {
-        pool.insert(pool.end(), numbers.begin(), numbers.end());
+        m_CharacterPool.insert(m_CharacterPool.end(), m_UppercaseLetters.begin(), m_UppercaseLetters.end());
     }
 
-    if (use_symbols)
+    if (m_UseNumbers)
     {
-        pool.insert(pool.end(), symbols.begin(), symbols.end());
+        m_CharacterPool.insert(m_CharacterPool.end(), m_Numbers.begin(), m_Numbers.end());
     }
 
-    if (exclude_similar_chars)
+    if (m_UseSymbols)
     {
-        RemoveFromPool(pool, EXCLUDED_CHARS);
+        m_CharacterPool.insert(m_CharacterPool.end(), m_Symbols.begin(), m_Symbols.end());
     }
 
-    if (exclude_ambiguous_symbols)
+    if (m_ExcludeSimilarChars)
     {
-        RemoveFromPool(pool, EXCLUDED_SYMBOLS);
+        RemoveFromPool(m_CharacterPool, EXCLUDED_CHARS);
+    }
+
+    if (m_ExcludeAmbiguousSymbols)
+    {
+        RemoveFromPool(m_CharacterPool, EXCLUDED_SYMBOLS);
     }
 }
 
-void PassGenerator::UseUpper(bool b)
+void Rpg::useUpper(bool option)
 {
-    use_upper = b;
-    GeneratePool();
+    m_UseUpper = option;
+    generatePool();
 }
 
-void PassGenerator::UseLower(bool b)
+void Rpg::useLower(bool option)
 {
-    use_lower = b;
-    GeneratePool();
+    m_UseLower = option;
+    generatePool();
 }
 
-void PassGenerator::UseNumbers(bool b)
+void Rpg::useNumbers(bool option)
 {
-    use_numbers = b;
-    GeneratePool();
+    m_UseNumbers = option;
+    generatePool();
 }
 
-void PassGenerator::UseSymbols(bool b)
+void Rpg::useSymbols(bool option)
 {
-    use_symbols = b;
-    GeneratePool();
+    m_UseSymbols = option;
+    generatePool();
 }
 
-void PassGenerator::ExcludeSimilarChars(bool b)
+void Rpg::excludeSimilarChars(bool option)
 {
-    exclude_similar_chars = b;
-    GeneratePool();
+    m_ExcludeSimilarChars = option;
+    generatePool();
 }
 
-void PassGenerator::ExcludeAmbiguousSymbols(bool b)
+void Rpg::excludeAmbiguousSymbols(bool option)
 {
-    exclude_ambiguous_symbols = b;
-    GeneratePool();
+    m_ExcludeAmbiguousSymbols = option;
+    generatePool();
 }
 
-int PassGenerator::RandomPoolElement()
+int Rpg::randomPoolElement()
 {
     std::random_device device{"/dev/urandom"};
     std::mt19937 engine(device());
-    std::uniform_int_distribution<> distribution(0, pool.size()-1);
+    std::uniform_int_distribution<> distribution(0, m_CharacterPool.size()-1);
     return distribution(engine);
 }

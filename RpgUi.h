@@ -1,14 +1,14 @@
 #ifndef RPGUI_H
 #define RPGUI_H
 
-#include <QLabel>
-#include <QTextEdit>
-#include <QIcon>
-#include <QPushButton>
-#include <QComboBox>
-#include <QListWidget>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QIcon>
+#include <QLabel>
+#include <QListWidget>
+#include <QPushButton>
 #include <QString>
+#include <QTextEdit>
 
 struct RpgUi
 {

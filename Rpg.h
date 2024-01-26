@@ -1,44 +1,54 @@
 #ifndef RPG_H
 #define RPG_H
 
-#include <string>
 #include <iostream>
 #include <random>
+#include <string>
 
-std::vector<int> concat_symbol_chars(const std::vector<int>& v1, const std::vector<int>& v2, const std::vector<int>& v3);
+std::vector<int> concat_symbol_chars(const std::vector<int>& vec1, const std::vector<int>& vec2, const std::vector<int>& vec3);
 
-class PassGenerator
+struct RpgRange
+{
+    int min;
+    int max;
+};
+
+class Rpg
 {
     using CharPool = std::vector<int>;
 public:
-    PassGenerator(size_t length, bool ul, bool ll, bool num, bool sym);
+    Rpg(size_t length, bool upper, bool lower, bool num, bool sym);
 
-    std::string Generate();
-    void GeneratePool();
-    void UseUpper(bool b);
-    void UseLower(bool b);
-    void UseNumbers(bool b);
-    void UseSymbols(bool b);
-    void ExcludeSimilarChars(bool b);
-    void ExcludeAmbiguousSymbols(bool b);
-    int RandomPoolElement();
-    void SetLength(int new_length) { pass_length = new_length; }
-	const int Length() { return pass_length; }
+    std::string generate();
+    void generatePool();
+    void useUpper(bool option);
+    void useLower(bool option);
+    void useNumbers(bool option);
+    void useSymbols(bool option);
+    void excludeSimilarChars(bool option);
+    void excludeAmbiguousSymbols(bool option);
+    int randomPoolElement();
+    void setLength(int new_length) noexcept { m_PassLength = new_length; }
+	constexpr int length() noexcept { return m_PassLength; }
 private:
-    std::vector<int> CharRange(int lower, int upper);
-    size_t pass_length;
-    CharPool uppercase_letters{CharRange(65, 90)};
-    CharPool lowercase_letters{CharRange(97, 122)};
-    CharPool numbers{CharRange(48, 57)};
-    CharPool symbols{concat_symbol_chars(CharRange(33, 47), CharRange(58, 64), CharRange(123, 126))};
-    bool use_upper{true};
-    bool use_lower{true};
-    bool use_numbers{false};
-    bool use_symbols{false};
-    bool exclude_similar_chars{false};
-    bool exclude_ambiguous_symbols{false};
+    static std::vector<int> charRange(RpgRange range);
+private:
+    size_t m_PassLength;
+    CharPool m_UppercaseLetters{charRange(RpgRange{65, 90})};
+    CharPool m_LowercaseLetters{charRange(RpgRange{97, 122})};
+    CharPool m_Numbers{charRange(RpgRange{48, 57})};
+    CharPool m_Symbols{concat_symbol_chars(charRange(RpgRange{33, 47}), charRange(RpgRange{58, 64}), charRange(RpgRange{123, 126}))};
+    bool m_UseUpper{true};
+    bool m_UseLower{true};
+    bool m_UseNumbers{false};
+    bool m_UseSymbols{false};
+    bool m_ExcludeSimilarChars{false};
+    bool m_ExcludeAmbiguousSymbols{false};
 
-    std::vector<int> pool;
+    std::vector<int> m_CharacterPool;
+
+    const std::vector<char> EXCLUDED_CHARS{'0', 'O', 'o', 'L', 'l', 'i', '1'};
+    const std::vector<char> EXCLUDED_SYMBOLS{'{', '}', '[', ']', '(', ')', '/', '\\', '\'', '\"', '`', '~', ',', ';', ':', '.', '<', '>'};
 
 };
 

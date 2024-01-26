@@ -21,8 +21,8 @@ public:
 
 private slots:
     void handleRefresh();
-	void handleCopyButton();
-	void handleLengthChange(int index);
+	void handleCopyButton() const;
+	void handleLengthChange();
 	void handleUpperStateChange(int state);
 	void handleLowerStateChange(int state);
 	void handleNumberStateChange(int state);
@@ -37,16 +37,21 @@ private:
 	void setupLengthTool();
 	void setupCheckBoxes();
 	void setupCheckBoxLabels();
+	void updateSimilarCharsVisibilityState() const;
+	void updateAmbiguousSymbolsVisibilityState() const;
+	static void centerWidgetHorizontally(QWidget* widget);
 private:
-    Ui::MainWindow *ui;
-	PassGenerator m_Rpg;
+    Ui::MainWindow *m_Ui;
+	Rpg m_Rpg;
     RpgUi m_RpgUi;
+
+	const int MINIMUM_PASS_LENGTH = 6;
 };
 
-float qw_width(const QWidget& widget);
-float qw_height(const QWidget& widget);
-float qw_x_pos(const QWidget& widget);
-float qw_y_pos(const QWidget& widget);
+int qw_width(const QWidget& widget);
+int qw_height(const QWidget& widget);
+int qw_x_pos(const QWidget& widget);
+int qw_y_pos(const QWidget& widget);
 
 
 #endif // MAINWINDOW_H
